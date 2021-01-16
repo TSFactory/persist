@@ -15,6 +15,7 @@ import           Data.Function
 import qualified Data.ByteString as BS
 import qualified Data.ByteString.Lazy as LB
 import           Data.Persist
+import           Data.Persist.Internal (GetException)
 import           Test.Framework (Test(),testGroup)
 import           Test.Framework.Providers.QuickCheck2 (testProperty)
 import           Test.QuickCheck as QC
@@ -69,11 +70,11 @@ instance Arbitrary (Get ()) where
   arbitrary = buildGet <$> genGetD
 
 newtype R a =
-  R { unR :: Either String a }
+  R { unR :: Either GetException a }
   deriving Show
 
 
--- Ignore equality of error message string
+-- Ignore equality of error message
 instance Eq a => Eq (R a) where
   (==)  =  (==) `on` either (const Nothing) Just . unR
 

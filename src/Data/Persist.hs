@@ -33,6 +33,7 @@ module Data.Persist (
     -- * Serialization
     , encode
     , decode
+    , decodeEx
 
     -- * The Get type
     , Get
@@ -58,6 +59,8 @@ module Data.Persist (
     , putBE
 ) where
 
+import Control.Arrow (left)
+import Control.Exception (displayException)
 import Control.Monad
 import Data.Bits
 import Data.ByteString (ByteString)
@@ -354,7 +357,11 @@ encode = runPut . put
 -- | Decode a value from a strict ByteString, reconstructing the original
 -- structure.
 decode :: Persist a => ByteString -> Either String a
-decode = runGet get
+decode = left displayException . runGet get
+
+-- | Same as 'decode', but returns specific error type instead of error string.
+decodeEx :: Persist a => ByteString -> Either GetException a
+decodeEx = runGet get
 
 putLE :: Persist (LittleEndian a) => a -> Put ()
 putLE = put . LittleEndian

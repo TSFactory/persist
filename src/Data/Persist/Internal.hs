@@ -134,9 +134,9 @@ runGetIO m s = run
         (B.PS buf pos len) = s
 
 -- | Run the Get monad applies a 'get'-based parser on the input ByteString
-runGet :: Get a -> ByteString -> Either String a
+runGet :: Get a -> ByteString -> Either GetException a
 runGet m s = unsafePerformIO $ catch (Right <$!> (runGetIO m s)) handler
-  where handler (e :: GetException) = pure $ Left $ displayException e
+  where handler (e :: GetException) = pure $ Left $ e
 {-# NOINLINE runGet #-}
 
 data Chunk = Chunk
